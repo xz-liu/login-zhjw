@@ -22,7 +22,7 @@ aaoLogin.loginOnly('your id', 'your password', (v) => {
 });
 //get some basic informations
 aaoLogin.basicInfo('your id', 'your password', (v) => {
-    //v is a bool
+    //to do sth
 });
 //get your photo
 aaoLogin.getPic('your id', 'your password', (v) => {
