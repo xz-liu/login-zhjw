@@ -33,5 +33,6 @@ http.createServer(function (req, res) {
     } else {
         console.log('no param');
         res.writeHead(200);
+        res.end();
     }
 }).listen(3002);

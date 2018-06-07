@@ -1,4 +1,5 @@
 import scan
+import os
 import string
 import sys
 
@@ -7,6 +8,7 @@ tmps = scan.get_templates()
 def read_img(name):
     # url='https://zhjw.neu.edu.cn/ACTIONVALIDATERANDOMPICTURE.APPPROCESS?id='+urlappend
     res = scan.scan_code(name, tmps)
+    os.remove(name)
     return eval(res)
 
 

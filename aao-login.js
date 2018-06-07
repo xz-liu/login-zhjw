@@ -37,6 +37,7 @@ class AAOLogin {
                 encoding: null
 
             }, (async function (err, response, body) {
+                if (err) reject();
                 let html = iconv.decode(body, 'gb2312').toString('utf8');
                 let schoolPos = html.search('<td width="15%" align="right" nowrap><span class="style3">院系</span></td>')
                     + '<td width="15%" align="right" nowrap><span class="style3">院系</span></td>              <td width="35%" align="left" nowrap>&nbsp;'.length;
@@ -73,6 +74,7 @@ class AAOLogin {
                 encoding: null
                 // 学号:&nbsp;{id}&nbsp;&nbsp;&nbsp;&nbsp;姓名:&nbsp;
             }, (async function (err, response, body) {
+                if (err) reject();
                 // let photoFile = fs.createWriteStream('photo/' + stuid + '.jpg');
                 // photoFile.write(body, 'binary');
                 // photoFile.close();
@@ -96,6 +98,7 @@ class AAOLogin {
                 encoding: null
                 // 学号:&nbsp;{id}&nbsp;&nbsp;&nbsp;&nbsp;姓名:&nbsp;
             }, (async function (err, response, body) {
+                if (err) reject();
                 let html = iconv.decode(body, 'gb2312').toString('utf8');
                 // console.log(basicInfo);
                 let gpaPos = html.search(/平均学分绩点：\d\.\d*/) + "平均学分绩点：".length;
@@ -185,16 +188,12 @@ class AAOLogin {
                     encoding: null
                 };
                 request(optionCodePic, (err, responst, body) => {
+                    if (err) return;
                     let name = makeid();
                     let file = fs.createWriteStream(name);
                     file.write(body);
                     file.close();
                     var getAns = spawn('python', ["readimg.py", name]);
-                    // console.log('file:' + name);
-                    getAns.on('exit', ((code) => {
-                        // console.log("Process quit with code : " + code);
-                        fs.unlink(name);
-                    }).bind(name, fs));
                     getAns.stdout.on('data', (async function (data) {
                         // console.log('ondata');
                         data = data.toString().replace('\r', '').replace('\n', '');
