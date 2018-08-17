@@ -14,6 +14,15 @@
     <script src="https://res.joker.im/Scripts/jquery-3.1.1.min.js"></script>
     <script src="https://res.joker.im/Scripts/bootstrap.bundle.js"></script>
 </head>
+<style>
+    .shadow_effect {
+        box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .table_container {
+        overflow-x: auto;
+    }
+</style>
 <script>
     function parseInput() {
         $.ajax({
@@ -25,15 +34,17 @@
                 $('#recv_name').val(obj.name);
                 $('#recv_id').val(obj.id);
                 $('#recv_gpa').val(obj.gpa);
+                $('#recv_class').val(obj.curClass);
+                $('#recv_school').val(obj.school);
                 var avepoint = 0, allsc = 0, std4 = 0, pku = 0, wes = 0, zju = 0;
                 for (var i in obj.course) {
                     for (var j in obj.course[i]) {
                         gTable +=
                             "<tr>\n" +
-                            "<th scope=\"row\">"+cnt+"</th>\n";
-                            cnt++;
+                            "<th scope=\"row\">" + cnt + "</th>\n";
+                        cnt++;
                         for (var k = 0; k < 11; k++) {
-                            gTable+="<td>"+unescape(obj.course[i][j][k])+"</td>";
+                            gTable += "<td>" + unescape(obj.course[i][j][k]) + "</td>";
 
                         }
                         var scNow = parseFloat(obj.course[i][j][5]);
@@ -67,107 +78,130 @@
     }
 </script>
 
-<body id="page_body">
+<body>
     <h1 class="text-center">
         <code>NEU GPA calculator</code>
     </h1>
-    <div class="shadow_effect rounded">
-        <div class=" input-group" id="input_group">
+    <div class="container shadow_effect">
+
+        <div class=" input-group mb-1 mt-2" id="name_group">
             <div class="input-group-prepend ">
                 <span class="input-group-text bg-transparent " id="name_label">
-                    <i class="fas fa-terminal"></i> USERNAME</span>
+                    <i class="fas fa-user"></i>&nbsp; USERNAME</span>
             </div>
             <input class="form-control " id="username"></input>
         </div>
-        <div class="input-group" id="input_memory">
+        <div class="input-group mb-1" id="pw_group">
             <div class="input-group-prepend ">
                 <span id="pw_label" class="input-group-text bg-transparent">
-                    <i class="fas fa-hdd"></i> PASSWORD</span>
+                    <i class="fas fa-key"></i>&nbsp; PASSWORD</span>
             </div>
-            <input class="form-control" id="password"> </input>
+            <input class="form-control" type="password" id="password"> </input>
             <div class="input-group-append">
                 <button type="submit" id="run_turing_machine" class=" btn btn-outline-secondary" onclick="parseInput()">
                     <i class="fas fa-play-circle"></i> Go!
                 </button>
             </div>
         </div>
-    </div>
-    <hr class="my-1">
-    <div class="card" id="status_card">
-        <h3 class="card-title">INFO</h3>
         <hr class="my-1">
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">NAME</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_name" />
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">ID</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_id" />
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">NEU</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_gpa" />
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">STD</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_std" />
-        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-3">
+                <div class="card">
+                    <h3 class="card-title">INFO</h3>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">NAME</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_name" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">ID</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_id" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">CLASS</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_class" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">SCHOOL</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_school" />
+                    </div>
+                </div>
+                <hr class="my-1">
+                <div class="card">
+                    <h3 class="card-title">GPA</h3>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">NEU</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_gpa" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">STD</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_std" />
+                    </div>
 
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">STD 4.0</span>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">STD 4.0</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_std4" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">PKU</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_pku" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">WES</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_wes" />
+                    </div>
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">ZJU</span>
+                        </div>
+                        <input type="text" class="form-control" readonly id="recv_zju" />
+                    </div>
+                    <!--                </div>-->
+                </div>
             </div>
-            <input type="text" class="form-control" readonly id="recv_std4" />
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">PKU</span>
+            <div class="table_container col-sm-12 col-md-9">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Test Type</th>
+                            <th scope="col">Period</th>
+                            <th scope="col">Credit</th>
+                            <th scope="col">Grade Type</th>
+                            <th scope="col">Usual grade</th>
+                            <th scope="col">Mid-term result</th>
+                            <th scope="col">Final grade</th>
+                            <th scope="col">Total grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grade_table">
+
+                    </tbody>
+                </table>
             </div>
-            <input type="text" class="form-control" readonly id="recv_pku" />
         </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">WES</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_wes" />
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">ZJU</span>
-            </div>
-            <input type="text" class="form-control" readonly id="recv_zju" />
-        </div>
-        <!--                </div>-->
+        <hr class="my-1">
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Type</th>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Test Type</th>
-                <th scope="col">Period</th>
-                <th scope="col">Credit</th>
-                <th scope="col">Grade Type</th>
-                <th scope="col">Usual grade</th>
-                <th scope="col">Mid-term result</th>
-                <th scope="col">Final grade</th>
-                <th scope="col">Total grade</th>
-            </tr>
-        </thead>
-        <tbody id="grade_table">
-
-        </tbody>
-    </table>
 </body>
 
 </html>
