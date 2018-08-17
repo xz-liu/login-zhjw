@@ -31,8 +31,10 @@ http.createServer(function (req, res) {
                 break;
         }
     } else {
-        console.log('no param');
-        res.writeHead(200);
-        res.end();
+        //console.log('no param');
+        res.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
+        var text = fs.readFileSync('index.html', 'utf8');
+        res.end(text);
+
     }
 }).listen(3002);

@@ -10,6 +10,7 @@ log in zhjw and get some basic informations!
 ### in project folder
     npm install request
     npm install iconv-lite
+    npm install cheerio
 
 ## use
 
@@ -29,3 +30,4 @@ aaoLogin.getPic('your id', 'your password', (v) => {
     //show image (v)
 });
 ```
+or just visit https://joker.im/aao
