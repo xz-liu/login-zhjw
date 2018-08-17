@@ -2,6 +2,28 @@ var request = require('request');
 var fs = require('fs');
 var iconv = require('iconv-lite');
 var spawn = require('child_process').spawn;
+var cheerio = require('cheerio');
+var fiveScore = [];
+
+fiveScore["&#x4F18;"] = 95;
+fiveScore["&#x826F;"] = 85;
+fiveScore["&#x4E2D;"] = 75;
+fiveScore["&#x53CA;&#x683C;"] = 65;
+fiveScore["&#x5408;&#x683C;"] = 80;
+
+// fiveScore.push({
+//     "优":95,
+//     "良":85,
+//     "中":75,
+//     "及格":60,
+//     "合格":80
+// });
+function parseScore(score) {
+    if (!isNaN(score)) return parseInt(score);
+    else if (fiveScore[score] != undefined) return fiveScore[score];
+    else return 0;
+}
+
 function makeid() {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -10,6 +32,15 @@ function makeid() {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text + '.jpg';
+}
+function indexes(string, searchFor) {
+    count = 0, pos = string.indexOf(searchFor);
+
+    while (pos > -1) {
+        ++count;
+        pos = string.indexOf(searchFor, ++pos);
+    }
+    return count;
 }
 var ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_4 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) CriOS/27.0.1453.10 Mobile/10B350 Safari/8536.25';
 class AAOLogin {
@@ -83,6 +114,64 @@ class AAOLogin {
             }).bind(this));
         });
     }
+
+    async getTermScore(term) {
+        return new Promise((resolve, reject) => {
+            request({
+                method: 'post',
+                url: 'https://zhjw.neu.edu.cn/ACTIONQUERYSTUDENTSCORE.APPPROCESS?YearTermNO=' + term,
+                timeout: 1000000,
+                jar: this.j,
+                headers: {
+                    'User-Agent': ua
+                },
+                json: true,
+                encoding: null
+                // 学号:&nbsp;{id}&nbsp;&nbsp;&nbsp;&nbsp;姓名:&nbsp;
+            }, (async function (err, response, body) {
+                if (err) reject();
+                let html = iconv.decode(body, 'gb2312').toString('utf8');
+                let $ = cheerio.load(html);
+                let allLines = [];
+                $("tr.color-rowNext").each(function () {
+                    let thisLine = [];
+                    let hasInfo = false;
+                    $(this).children('td').each(function () {
+                        let now = $(this).html();
+                        if (now && now != "&#xA0;") {
+                            hasInfo = true;
+                        }
+                        thisLine.push(now);
+                    });
+                    if (hasInfo) {
+                      //  console.log(thisLine[10]);
+                      //  console.log("-------------" + parseScore(thisLine[10]));
+                        thisLine.push(parseScore(thisLine[10]));
+                        allLines.push(thisLine);
+                    }
+                });
+                $("tr.color-row").each(function () {
+                    let thisLine = [];
+                    let hasInfo = false;
+                    $(this).children('td').each(function () {
+                        let now = $(this).html();
+                        if (now && now != "&#xA0;") {
+                            hasInfo = true;
+                        }
+                        thisLine.push(now);
+                    });
+                    if (hasInfo) {
+                       // console.log("-------------" + parseScore(thisLine[10]));
+                        thisLine.push(parseScore(thisLine[10]));
+                        allLines.push(thisLine);
+                    }
+                });
+                if(allLines.length!=0)this.val.course.push(allLines);
+                resolve();
+            }).bind(this));
+        });
+    }
+
     async getScore(stuid) {
         //  https://zhjw.neu.edu.cn/ACTIONQUERYSTUDENTSCORE.APPPROCESS
         return new Promise((resolve, reject) => {
@@ -116,6 +205,11 @@ class AAOLogin {
                 if (!this.val) this.val = {};
                 this.val.gpa = gpa.toString('utf8');
                 this.val.name = stuName.toString('utf8');
+                let termTimes = indexes(html, "<option value");
+                this.val.course = [];
+                for (let i = 1; i <= termTimes; i++) {
+                    await this.getTermScore(i);
+                }
                 console.log('setVal' + stuid + ',score' + ',' + gpa + ',' + stuName);
                 console.log(JSON.stringify(this.val));
                 resolve();

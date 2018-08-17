@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="General Turing Machine Emulator" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>NEU GPA calculator</title>
+    <link href="https://res.joker.im/Content/bootstrap.css" rel="stylesheet" />
+    <link rel="icon" href="https://res.joker.im/favicon_code.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="https://res.joker.im/favicon_code.ico" type="image/x-icon" />
+    <link href="https://res.joker.im/Fonts/css/fontawesome.css" media="all" rel="stylesheet" />
+    <link href="https://res.joker.im/Fonts/css/fontawesome-all.css" media="all" rel="stylesheet" />
+    <script src="https://res.joker.im/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="https://res.joker.im/Scripts/bootstrap.bundle.js"></script>
+</head>
+<script>
+    function parseInput() {
+        $.ajax({
+            type: 'post',
+            url: "http://localhost:3002/?id=" + $('#username').val() + "&pw=" + $('#password').val() + "&t=info",
+            success: function (obj) {
+                var gTable = "", cnt = 1;
+                console.log(obj);
+                $('#recv_name').val(obj.name);
+                $('#recv_id').val(obj.id);
+                $('#recv_gpa').val(obj.gpa);
+                var avepoint = 0, allsc = 0, std4 = 0, pku = 0, wes = 0, zju = 0;
+                for (var i in obj.course) {
+                    for (var j in obj.course[i]) {
+                        gTable +=
+                            "<tr>\n" +
+                            "<th scope=\"row\">"+cnt+"</th>\n";
+                            cnt++;
+                        for (var k = 0; k < 11; k++) {
+                            gTable+="<td>"+unescape(obj.course[i][j][k])+"</td>";
+
+                        }
+                        var scNow = parseFloat(obj.course[i][j][5]);
+                        var ptNow = obj.course[i][j][11];
+                        if (ptNow >= 60) {
+                            var std4Now = Math.floor(ptNow / 10) - 5;
+                            if (ptNow === 100) std4Now -= 1;
+                            std4 += std4Now * scNow;
+                            var wesNow = Math.floor((ptNow - 45) / 10);
+                            if (ptNow >= 95) wesNow -= 1;
+                            wes += wesNow * scNow;
+                            pku += scNow * (4 - 3 * (100 - ptNow) * (100 - ptNow) / 1600);
+                            var zjuNow = (ptNow - 45) / 10;
+                            if (ptNow > 85) zjuNow = 4;
+                            zju += zjuNow * scNow;
+                        }
+                        avepoint += ptNow * scNow;
+                        allsc += scNow;
+                    }
+                }
+                avepoint /= allsc;
+                console.log(avepoint);
+                $('#recv_std').val(avepoint * 4 / 100);
+                $('#recv_std4').val(std4 / allsc);
+                $('#recv_pku').val(pku / allsc);
+                $('#recv_wes').val(wes / allsc);
+                $('#recv_zju').val(zju / allsc);
+                $("#grade_table").html(gTable);
+            }
+        });
+    }
+</script>
+
+<body id="page_body">
+    <h1 class="text-center">
+        <code>NEU GPA calculator</code>
+    </h1>
+    <div class="shadow_effect rounded">
+        <div class=" input-group" id="input_group">
+            <div class="input-group-prepend ">
+                <span class="input-group-text bg-transparent " id="name_label">
+                    <i class="fas fa-terminal"></i> USERNAME</span>
+            </div>
+            <input class="form-control " id="username"></input>
+        </div>
+        <div class="input-group" id="input_memory">
+            <div class="input-group-prepend ">
+                <span id="pw_label" class="input-group-text bg-transparent">
+                    <i class="fas fa-hdd"></i> PASSWORD</span>
+            </div>
+            <input class="form-control" id="password"> </input>
+            <div class="input-group-append">
+                <button type="submit" id="run_turing_machine" class=" btn btn-outline-secondary" onclick="parseInput()">
+                    <i class="fas fa-play-circle"></i> Go!
+                </button>
+            </div>
+        </div>
+    </div>
+    <hr class="my-1">
+    <div class="card" id="status_card">
+        <h3 class="card-title">INFO</h3>
+        <hr class="my-1">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">NAME</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_name" />
+        </div>
+        <hr class="my-1">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">ID</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_id" />
+        </div>
+        <hr class="my-1">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">NEU</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_gpa" />
+        </div>
+        <hr class="my-1">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">STD</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_std" />
+        </div>
+        <hr class="my-1">
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">STD 4.0</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_std4" />
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">PKU</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_pku" />
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">WES</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_wes" />
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">ZJU</span>
+            </div>
+            <input type="text" class="form-control" readonly id="recv_zju" />
+        </div>
+        <!--                </div>-->
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Type</th>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Test Type</th>
+                <th scope="col">Period</th>
+                <th scope="col">Credit</th>
+                <th scope="col">Grade Type</th>
+                <th scope="col">Usual grade</th>
+                <th scope="col">Mid-term result</th>
+                <th scope="col">Final grade</th>
+                <th scope="col">Total grade</th>
+            </tr>
+        </thead>
+        <tbody id="grade_table">
+
+        </tbody>
+    </table>
+</body>
+
+</html>

@@ -11,7 +11,6 @@ def read_img(name):
     os.remove(name)
     return eval(res)
 
-
 if(len(sys.argv) == 2):
     print(read_img(sys.argv[1]))
 else:
