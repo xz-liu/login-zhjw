@@ -190,10 +190,10 @@ class AAOLogin {
                 if (err) reject();
                 let html = iconv.decode(body, 'gb2312').toString('utf8');
                 // console.log(basicInfo);
-                let gpaPos = html.search(/平均学分绩点：\d\.\d*/) + "平均学分绩点：".length;
-                let gpaEnd = gpaPos + 1;
-                while ('0123456789.'.includes(html[gpaEnd])) gpaEnd++;
-                let gpa = html.substring(gpaPos, gpaEnd);
+                // let gpaPos = html.search(/平均学分绩点：\d\.\d*/) + "平均学分绩点：".length;
+                // let gpaEnd = gpaPos + 1;
+                // while ('0123456789.'.includes(html[gpaEnd])) gpaEnd++;
+                // let gpa = html.substring(gpaPos, gpaEnd);
 
                 // console.log('--gpa: ' + gpa);
                 let idPos = html.search(/学号:&nbsp;\d*/) + "学号:&nbsp;".length;
@@ -203,15 +203,15 @@ class AAOLogin {
                 // console.log('--name: ' + stuName);
                 // getEnd();
                 if (!this.val) this.val = {};
-                this.val.gpa = gpa.toString('utf8');
+                // this.val.gpa = gpa.toString('utf8');
                 this.val.name = stuName.toString('utf8');
                 let termTimes = indexes(html, "<option value");
                 this.val.course = [];
                 for (let i = 1; i <= termTimes; i++) {
                     await this.getTermScore(i);
                 }
-                console.log('setVal' + stuid + ',score' + ',' + gpa + ',' + stuName);
-                console.log(JSON.stringify(this.val));
+                // console.log('setVal' + stuid + ',score' + ',' + gpa + ',' + stuName);
+                // console.log(JSON.stringify(this.val));
                 resolve();
             }).bind(this));
         });

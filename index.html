@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8" />
-    <meta name="description" content="General Turing Machine Emulator" />
+    <meta name="description" content="GPA" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>NEU GPA calculator</title>
     <link href="https://res.joker.im/Content/bootstrap.css" rel="stylesheet" />
@@ -22,69 +21,17 @@
     .table_container {
         overflow-x: auto;
     }
-    .fa-github{
+
+    .fa-github {
         color: black;
     }
 </style>
-<script>
-    function parseInput() {
-        $.ajax({
-            type: 'post',
-            url: "https://joker.im/aao/?id=" + $('#username').val() + "&pw=" + $('#password').val() + "&t=info",
-            success: function (obj) {
-                var gTable = "", cnt = 1;
-                console.log(obj);
-                $('#recv_name').val(obj.name);
-                $('#recv_id').val(obj.id);
-                $('#recv_gpa').val(obj.gpa);
-                $('#recv_class').val(obj.curClass);
-                $('#recv_school').val(obj.school);
-                var avepoint = 0, allsc = 0, std4 = 0, pku = 0, wes = 0, zju = 0;
-                for (var i in obj.course) {
-                    for (var j in obj.course[i]) {
-                        gTable +=
-                            "<tr>\n" +
-                            "<th scope=\"row\">" + cnt + "</th>\n";
-                        cnt++;
-                        for (var k = 0; k < 11; k++) {
-                            gTable += "<td>" + unescape(obj.course[i][j][k]) + "</td>";
-
-                        }
-                        var scNow = parseFloat(obj.course[i][j][5]);
-                        var ptNow = obj.course[i][j][11];
-                        if (ptNow >= 60) {
-                            var std4Now = Math.floor(ptNow / 10) - 5;
-                            if (ptNow === 100) std4Now -= 1;
-                            std4 += std4Now * scNow;
-                            var wesNow = Math.floor((ptNow - 45) / 10);
-                            if (ptNow >= 95) wesNow -= 1;
-                            wes += wesNow * scNow;
-                            pku += scNow * (4 - 3 * (100 - ptNow) * (100 - ptNow) / 1600);
-                            var zjuNow = (ptNow - 45) / 10;
-                            if (ptNow > 85) zjuNow = 4;
-                            zju += zjuNow * scNow;
-                        }
-                        avepoint += ptNow * scNow;
-                        allsc += scNow;
-                    }
-                }
-                avepoint /= allsc;
-                console.log(avepoint);
-                $('#recv_std').val(avepoint * 4 / 100);
-                $('#recv_std4').val(std4 / allsc);
-                $('#recv_pku').val(pku / allsc);
-                $('#recv_wes').val(wes / allsc);
-                $('#recv_zju').val(zju / allsc);
-                $("#grade_table").html(gTable);
-            }
-        });
-    }
-</script>
-
 <body>
     <h1 class="text-center">
-        <a href="https://github.com/joker-xii/login-zhjw" >  <i class="fab fa-github"></i></a> &nbsp;
-         <code>NEU GPA calculator</code> 
+        <a href="https://github.com/joker-xii/login-zhjw">
+            <i class="fab fa-github"></i>
+        </a> &nbsp;
+        <code>NEU GPA calculator</code>
     </h1>
     <div class="container shadow_effect">
 
@@ -102,7 +49,7 @@
             </div>
             <input class="form-control" type="password" id="password"> </input>
             <div class="input-group-append">
-                <button type="submit" id="run_turing_machine" class=" btn btn-outline-secondary" onclick="parseInput()">
+                <button type="submit" id="run_result" class=" btn btn-outline-secondary">
                     <i class="fas fa-play-circle"></i> Go!
                 </button>
             </div>
@@ -206,6 +153,92 @@
         </div>
         <hr class="my-1">
     </div>
+    <script>
+            var objNow;
+            var sel = [];
+            function selPos(i) {
+                sel[i]=$('#___'+i).is(":checked")
+                // console.log("SEL " +i +" "+ sel[i]);
+                calGPA();
+            }
+            function calGPA() {
+                if (objNow) {
+                    var obj = objNow;
+                    var cnt=0;
+                    var neu = 0, avepoint = 0, allsc = 0, std4 = 0, pku = 0, wes = 0, zju = 0;
+                    for (var i in obj.course) {
+                        for (var j in obj.course[i]) {
+                            if (sel[cnt++]===true) {
+                                var scNow = parseFloat(obj.course[i][j][5]);
+                                var ptNow = obj.course[i][j][11];
+                                if (ptNow >= 60) {
+                                    var std4Now = Math.floor(ptNow / 10) - 5;
+                                    if (ptNow === 100) std4Now -= 1;
+                                    std4 += std4Now * scNow;
+                                    var wesNow = Math.floor((ptNow - 45) / 10);
+                                    if (ptNow >= 95) wesNow -= 1;
+                                    wes += wesNow * scNow;
+                                    pku += scNow * (4 - 3 * (100 - ptNow) * (100 - ptNow) / 1600);
+                                    var zjuNow = (ptNow - 45) / 10;
+                                    if (ptNow > 85) zjuNow = 4;
+                                    zju += zjuNow * scNow;
+                                    neu += (ptNow - 50) * scNow;
+                                }
+                                avepoint += ptNow * scNow;
+                                allsc += scNow;
+                            }
+                        }
+                    }
+                    neu /= allsc;
+                    avepoint /= allsc;
+                    // console.log(avepoint);
+                    $('#recv_gpa').val(neu / 10);
+                    $('#recv_std').val(avepoint * 4 / 100);
+                    $('#recv_std4').val(std4 / allsc);
+                    $('#recv_pku').val(pku / allsc);
+                    $('#recv_wes').val(wes / allsc);
+                    $('#recv_zju').val(zju / allsc);
+                }
+            }
+            $("#run_result").click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: "https://joker.im/aao/?id=" + $('#username').val() + "&pw=" + $('#password').val() + "&t=info",
+                    success: function (obj) {
+                        var gTable = "", cnt = 0;
+                        objNow=obj;
+                        // console.log(obj);
+                        $('#recv_name').val(obj.name);
+                        $('#recv_id').val(obj.id);
+                        $('#recv_class').val(obj.curClass);
+                        $('#recv_school').val(obj.school);
+                        for (var i in obj.course) {
+                            for (var j in obj.course[i]) {
+                                sel[cnt]=true;
+                                gTable +=
+                                    "<tr>\n" +
+                                    "<th scope=\"row\">"
+                                    + "<div class=\"form-check form-check-inline\">"
+                                    + "<input class=\"form-check-input\" type=\"checkbox\" checked='checked' id='___" 
+                                    + cnt + "' onchange='selPos(" + cnt + ")' >"
+                                    + "</div>"
+                                    + "</th>\n";
+                                // <div class="form-check form-check-inline">
+                                //   <input class=\"form-check-input\" type=\"checkbox\"  value=\"1\">
+                                //   <label class="form-check-label" for="inlineCheckbox1">1</label>
+                                // </div>
+                                cnt++;
+                                for (var k = 0; k < 11; k++) {
+                                    gTable += "<td>" + unescape(obj.course[i][j][k]) + "</td>";
+                                }
+                            }
+                        }
+                        $("#grade_table").html(gTable);
+                        calGPA();
+                    }
+                });
+            });
+        </script>
 </body>
 
 </html>
