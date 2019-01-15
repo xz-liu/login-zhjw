@@ -200,10 +200,12 @@
                     $('#recv_zju').val(zju / allsc);
                 }
             }
+            var url_now= window.location.href;
+            url_now= url_now.substr(0,url_now.indexOf('?'));
             $("#run_result").click(function () {
                 $.ajax({
                     type: 'post',
-                    url: "https://joker.im/aao/?id=" + $('#username').val() + "&pw=" + $('#password').val() + "&t=info",
+                    url: url_now + "?id=" + $('#username').val() + "&pw=" + $('#password').val() + "&t=info",
                     success: function (obj) {
                         var gTable = "", cnt = 0;
                         objNow=obj;
