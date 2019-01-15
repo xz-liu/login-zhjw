@@ -30,4 +30,8 @@ aaoLogin.getPic('your id', 'your password', (v) => {
     //show image (v)
 });
 ```
-or just visit https://joker.im/aao
+or
+
+    node main.js
+
+then visit http://localhost:3002/
